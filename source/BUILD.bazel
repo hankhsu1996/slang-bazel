@@ -140,7 +140,6 @@ cc_library(
     }),
     includes = [
         ".",
-        "../external",
         "analysis",
         "ast",
         "ast/builtins",
@@ -153,8 +152,8 @@ cc_library(
         "util",
     ],
     deps = [
+        "//:slang_external",
         "//include:slang_headers",
-        "@external//:slang_external",
         "@fmt",
     ] + select({
         "//:use_mimalloc": ["@com_github_microsoft_mimalloc//:mimalloc"],

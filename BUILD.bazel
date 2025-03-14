@@ -31,6 +31,21 @@ config_setting(
     values = {"define": "BUILD_SHARED_LIBS=1"},
 )
 
+# Third-party header-only libraries
+# These headers are directly referenced with angle brackets in source files.
+# We use strip_include_prefix to make them available at the root of the include path,
+# avoiding conflicts with Bazel's reserved 'external' directory name.
+cc_library(
+    name = "slang_external",
+    hdrs = [
+        "external/BS_thread_pool.hpp",
+        "external/boost_concurrent.hpp",
+        "external/boost_unordered.hpp",
+        "external/expected.hpp",
+    ],
+    strip_include_prefix = "external",
+)
+
 #
 # Main Executable
 #

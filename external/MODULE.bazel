@@ -1,7 +1,0 @@
-"""
-Module for the external folder.
-"""
-
-module(
-    name = "external",
-)
