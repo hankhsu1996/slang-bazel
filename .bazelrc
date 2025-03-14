@@ -1,0 +1,18 @@
+# Common compiler flags
+build --cxxopt="-std=c++20"
+build --cxxopt="-Wall"
+build --cxxopt="-Wextra"
+
+# Debug configuration
+build -c dbg
+build --strip=never
+
+# Test configuration
+test --test_output=all
+test --test_timeout=5  # 5 seconds timeout
+
+# Python support
+build --incompatible_use_python_toolchains
+
+# Enable fuzzing when needed
+build --define=SLANG_FUZZ_TARGET=1

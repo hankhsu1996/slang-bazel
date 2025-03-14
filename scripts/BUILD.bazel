@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+# Diagnostic generation
+filegroup(
+    name = "diagnostic_gen",
+    srcs = ["diagnostic_gen.py"],
+)
+
+filegroup(
+    name = "diagnostics",
+    srcs = ["diagnostics.txt"],
+)
+
+# Syntax generation
+filegroup(
+    name = "syntax_gen",
+    srcs = ["syntax_gen.py"],
+)
+
+filegroup(
+    name = "syntax",
+    srcs = ["syntax.txt"],
+)
+
+filegroup(
+    name = "trivia",
+    srcs = ["triviakinds.txt"],
+)
+
+filegroup(
+    name = "tokenkinds",
+    srcs = ["tokenkinds.txt"],
+)

@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "ast_sources",
+    srcs = glob([
+        "*.cpp",
+        "builtins/*.cpp",
+        "expressions/*.cpp",
+        "statements/*.cpp",
+        "symbols/*.cpp",
+        "types/*.cpp",
+    ]),
+)
+
+filegroup(
+    name = "ast_headers",
+    srcs = glob(
+        [
+            "*.h",
+            "builtins/*.h",
+            "symbols/*.h",
+            "expressions/*.h",
+            "statements/*.h",
+            "types/*.h",
+        ],
+        allow_empty = True,
+    ),
+)
