@@ -1,0 +1,173 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//:bazel/version_info.bzl", "version_info")
+
+genrule(
+    name = "generate_diagnostics",
+    srcs = [
+        "//scripts:diagnostic_gen",
+        "//scripts:diagnostics",
+    ],
+    outs = [
+        "slang/diagnostics/AllDiags.h",
+        "slang/diagnostics/AnalysisDiags.h",
+        "slang/diagnostics/CompilationDiags.h",
+        "slang/diagnostics/ConstEvalDiags.h",
+        "slang/diagnostics/DeclarationsDiags.h",
+        "slang/diagnostics/ExpressionsDiags.h",
+        "slang/diagnostics/GeneralDiags.h",
+        "slang/diagnostics/LexerDiags.h",
+        "slang/diagnostics/LookupDiags.h",
+        "slang/diagnostics/MetaDiags.h",
+        "slang/diagnostics/NumericDiags.h",
+        "slang/diagnostics/ParserDiags.h",
+        "slang/diagnostics/PreprocessorDiags.h",
+        "slang/diagnostics/StatementsDiags.h",
+        "slang/diagnostics/SysFuncsDiags.h",
+        "slang/diagnostics/TypesDiags.h",
+        "DiagCode.cpp",
+    ],
+    cmd = """
+        python3 $(location //scripts:diagnostic_gen) \
+        --outDir $(RULEDIR) \
+        --srcDir $(GENDIR)/source \
+        --incDir $(GENDIR)/include \
+        --diagnostics $(location //scripts:diagnostics)
+    """,
+)
+
+# Generate syntax-related code
+genrule(
+    name = "generate_syntax",
+    srcs = [
+        "//scripts:syntax_gen",
+        "//scripts:syntax",
+        "//scripts:trivia",
+        "//scripts:tokenkinds",
+    ],
+    outs = [
+        "slang/syntax/AllSyntax.h",
+        "AllSyntax.cpp",
+        "SyntaxClone.cpp",
+        "slang/syntax/SyntaxKind.h",
+        "slang/syntax/SyntaxFwd.h",
+        "slang/parsing/TokenKind.h",
+        "TokenKind.cpp",
+    ],
+    cmd = """
+        python3 $(location //scripts:syntax_gen) \
+        --dir $(RULEDIR) \
+        --syntax $(location //scripts:syntax)
+    """,
+)
+
+# Generate version information
+version_info(
+    name = "generate_version",
+    src = "util/VersionInfo.cpp.in",
+    out = "VersionInfo.cpp",
+    version_hash = "unknown",
+    version_major = "8",
+    version_minor = "0",
+    version_patch = "0",
+)
+
+# Main library target
+cc_library(
+    name = "slang_slang",
+    srcs = [
+        ":generate_diagnostics",
+        ":generate_syntax",
+        ":generate_version",
+        "//source/ast:ast_sources",
+    ] + glob([
+        "analysis/*.cpp",
+        "diagnostics/*.cpp",
+        "driver/*.cpp",
+        "numeric/*.cpp",
+        "parsing/*.cpp",
+        "syntax/*.cpp",
+        "text/*.cpp",
+        "util/*.cpp",
+    ]),
+    hdrs = [
+        "//include:slang_headers",
+        "//source/ast:ast_headers",
+    ] + glob(
+        [
+            "analysis/*.h",
+            "numeric/*.h",
+            "diagnostics/*.h",
+            "driver/*.h",
+            "parsing/*.h",
+            "syntax/*.h",
+            "text/*.h",
+            "util/*.h",
+        ],
+        allow_empty = True,
+    ),
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-DSLANG_BOOST_SINGLE_HEADER",
+        "-fvisibility=hidden",
+        "-fvisibility-inlines-hidden",
+    ] + select({
+        "//:use_mimalloc": ["-DSLANG_USE_MIMALLOC"],
+        "//conditions:default": [],
+    }) + select({
+        "//:use_cpptrace": ["-DSLANG_USE_CPPTRACE"],
+        "//conditions:default": [],
+    }) + select({
+        "//:include_pylib": [
+            "-fPIC",
+            "-D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR",
+        ],
+        "//conditions:default": [],
+    }) + select({
+        "//:fuzz_target": ["-DSLANG_ASSERT_ENABLED"],
+        "//conditions:default": [],
+    }),
+    defines = select({
+        "//:use_mimalloc": ["SLANG_USE_MIMALLOC"],
+        "//conditions:default": [],
+    }) + select({
+        "//:use_cpptrace": ["SLANG_USE_CPPTRACE"],
+        "//conditions:default": [],
+    }) + select({
+        "//:fuzz_target": ["SLANG_ASSERT_ENABLED"],
+        "//conditions:default": [],
+    }),
+    includes = [
+        ".",
+        "../external",
+        "analysis",
+        "ast",
+        "ast/builtins",
+        "diagnostics",
+        "driver",
+        "numeric",
+        "parsing",
+        "syntax",
+        "text",
+        "util",
+    ],
+    deps = [
+        "//include:slang_headers",
+        "@external//:slang_external",
+        "@fmt",
+    ] + select({
+        "//:use_mimalloc": ["@com_github_microsoft_mimalloc//:mimalloc"],
+        "//conditions:default": [],
+    }) + select({
+        "//:use_cpptrace": ["@com_github_jeremy-rifkin_cpptrace//:cpptrace"],
+        "//conditions:default": [],
+    }),
+)
+
+# Alias
+cc_library(
+    name = "slang_core",
+    visibility = ["//visibility:public"],
+    deps = [":slang_slang"],
+)

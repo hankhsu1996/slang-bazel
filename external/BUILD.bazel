@@ -1,0 +1,34 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "slang_external",
+    hdrs = glob(
+        [
+            "**/*.h",
+            "**/*.hpp",
+            "**/*.inc",
+        ],
+        allow_empty = True,
+    ),
+    includes = ["."],
+)
+
+config_setting(
+    name = "use_system_fmt",
+    values = {"define": "USE_SYSTEM_FMT=1"},
+)
+
+config_setting(
+    name = "use_system_mimalloc",
+    values = {"define": "USE_SYSTEM_MIMALLOC=1"},
+)
+
+config_setting(
+    name = "use_system_cpptrace",
+    values = {"define": "USE_SYSTEM_CPPTRACE=1"},
+)
+
+config_setting(
+    name = "use_system_catch2",
+    values = {"define": "USE_SYSTEM_CATCH2=1"},
+)
