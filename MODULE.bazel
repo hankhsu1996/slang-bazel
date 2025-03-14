@@ -23,10 +23,3 @@ bazel_dep(name = "pybind11_bazel", version = "2.13.6")
 
 # External libraries
 bazel_dep(name = "fmt", version = "11.1.3")
-
-# Local external modules
-bazel_dep(name = "external", version = "0.0.0")
-local_path_override(
-    module_name = "external",
-    path = "external",
-)
