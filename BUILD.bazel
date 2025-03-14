@@ -1,0 +1,88 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+load("@rules_python//python:defs.bzl", "py_library")
+
+package(default_visibility = ["//visibility:public"])
+
+#
+# Build Configuration Settings
+#
+config_setting(
+    name = "use_mimalloc",
+    values = {"define": "SLANG_USE_MIMALLOC=1"},
+)
+
+config_setting(
+    name = "use_cpptrace",
+    values = {"define": "SLANG_USE_CPPTRACE=1"},
+)
+
+config_setting(
+    name = "include_pylib",
+    values = {"define": "SLANG_INCLUDE_PYLIB=1"},
+)
+
+config_setting(
+    name = "fuzz_target",
+    values = {"define": "SLANG_FUZZ_TARGET=1"},
+)
+
+config_setting(
+    name = "build_shared",
+    values = {"define": "BUILD_SHARED_LIBS=1"},
+)
+
+#
+# Main Executable
+#
+cc_binary(
+    name = "slang_tool",
+    srcs = glob(
+        ["tools/**/*.cpp"],
+        allow_empty = True,
+    ),
+    copts = select({
+        ":fuzz_target": [
+            "-fsanitize=fuzzer",
+            "-DFUZZ_TARGET",
+        ],
+        "//conditions:default": [],
+    }),
+    linkopts = select({
+        ":fuzz_target": ["-fsanitize=fuzzer"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//source:slang_core",
+    ],
+)
+
+#
+# Tests
+#
+cc_test(
+    name = "slang_test",
+    timeout = "short",  # 5 seconds
+    srcs = glob(
+        ["tests/**/*.cpp"],
+        allow_empty = True,
+    ),
+    deps = [
+        "//source:slang_core",
+        "@catch2",
+    ],
+)
+
+#
+# Python Bindings
+#
+py_library(
+    name = "pyslang",
+    srcs = glob(
+        ["bindings/**/*.py"],
+        allow_empty = True,
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//source:slang_core",
+    ],
+)

@@ -1,0 +1,10 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Public API header files
+cc_library(
+    name = "slang_headers",
+    hdrs = glob(["slang/**/*.h"]),
+    includes = ["."],  # Makes headers available as #include "slang/..."
+)
