@@ -1,0 +1,33 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# Driver executable
+#
+# Build with fuzzing support:
+#   bazel build --config=fuzzing //tools/driver:slang_driver
+
+cc_binary(
+    name = "slang_driver",
+    srcs = ["slang_main.cpp"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//source:slang",  # Using the public API
+        "//:slang_external",  # For boost headers
+    ],
+    includes = [
+        "external",
+    ],
+    copts = [
+        # Only keep non-standard flags, others are in .bazelrc
+        "-DSLANG_BOOST_SINGLE_HEADER",
+    ] + select({
+        "//:fuzz_target": [
+            "-fsanitize=fuzzer",
+            "-DFUZZ_TARGET",
+        ],
+        "//conditions:default": [],
+    }),
+    linkopts = select({
+        "//:fuzz_target": ["-fsanitize=fuzzer"],
+        "//conditions:default": [],
+    }),
+)

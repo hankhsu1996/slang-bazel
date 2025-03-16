@@ -1,0 +1,53 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_library(
+    name = "slang_tidy_lib",
+    srcs = [
+        "src/TidyConfig.cpp",
+        "src/TidyConfigParser.cpp",
+        "src/ASTHelperVisitors.cpp",
+        "src/synthesis/OnlyAssignedOnReset.cpp",
+        "src/synthesis/RegisterHasNoReset.cpp",
+        "src/style/EnforcePortSuffix.cpp",
+        "src/synthesis/NoLatchesOnDesign.cpp",
+        "src/style/NoOldAlwaysSyntax.cpp",
+        "src/style/AlwaysCombNonBlocking.cpp",
+        "src/style/AlwaysFFBlocking.cpp",
+        "src/style/EnforceModuleInstantiationPrefix.cpp",
+        "src/style/OnlyANSIPortDecl.cpp",
+        "src/synthesis/XilinxDoNotCareValues.cpp",
+        "src/synthesis/CastSignedIndex.cpp",
+        "src/style/NoDotStarInPortConnection.cpp",
+        "src/style/NoImplicitPortNameInPortConnection.cpp",
+        "src/style/AlwaysCombNamed.cpp",
+        "src/style/GenerateNamed.cpp",
+        "src/style/NoDotVarInPortConnection.cpp",
+        "src/style/NoLegacyGenerate.cpp",
+        "src/synthesis/AlwaysFFAssignmentOutsideConditional.cpp",
+        "src/synthesis/UnusedSensitiveSignal.cpp",
+    ],
+    hdrs = glob(["include/**/*.h"]),
+    deps = [
+        "//source:slang",
+        "//:slang_external",
+    ],
+    includes = [
+        "include",
+        "external",  # For finding <boost_unordered.hpp>
+    ],
+    visibility = ["//visibility:public"],
+    alwayslink = 1,  # Force including the library in binaries
+)
+
+cc_binary(
+    name = "slang_tidy",
+    srcs = ["src/tidy.cpp"],
+    deps = [
+        ":slang_tidy_lib",
+    ],
+    includes = [
+        "include",
+        "external",  # For finding <boost_unordered.hpp>
+    ],
+    visibility = ["//visibility:public"],
+)

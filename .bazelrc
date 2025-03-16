@@ -2,6 +2,7 @@
 build --cxxopt="-std=c++20"
 build --cxxopt="-Wall"
 build --cxxopt="-Wextra"
+build --cxxopt="-DSLANG_BOOST_SINGLE_HEADER"  # Use bundled Boost headers
 
 # Debug configuration
 build -c dbg
@@ -14,5 +15,22 @@ test --test_timeout=5  # 5 seconds timeout
 # Python support
 build --incompatible_use_python_toolchains
 
-# Enable fuzzing when needed
-build --define=SLANG_FUZZ_TARGET=1
+# Default feature flags - all disabled by default
+build --define=SLANG_USE_MIMALLOC=0
+build --define=SLANG_USE_CPPTRACE=0
+build --define=SLANG_INCLUDE_PYLIB=0
+build --define=SLANG_FUZZ_TARGET=0
+build --define=SLANG_INCLUDE_THREADTEST=0
+build --define=BUILD_SHARED_LIBS=0
+
+# Feature configuration presets (opt-in)
+# Usage: bazel build --config=feature_name //target
+build:mimalloc --define=SLANG_USE_MIMALLOC=1
+build:cpptrace --define=SLANG_USE_CPPTRACE=1
+build:pylib --define=SLANG_INCLUDE_PYLIB=1
+build:fuzzing --define=SLANG_FUZZ_TARGET=1
+build:threadtest --define=SLANG_INCLUDE_THREADTEST=1
+build:shared --define=BUILD_SHARED_LIBS=1
+
+# Combined configurations
+build:full --config=mimalloc --config=cpptrace --config=shared

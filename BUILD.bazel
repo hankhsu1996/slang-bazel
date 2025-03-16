@@ -1,11 +1,14 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@rules_python//python:defs.bzl", "py_library")
 
 package(default_visibility = ["//visibility:public"])
 
-#
+#################################################
 # Build Configuration Settings
-#
+# All settings can be controlled via .bazelrc
+# See .bazelrc for available configurations
+#################################################
+
 config_setting(
     name = "use_mimalloc",
     values = {"define": "SLANG_USE_MIMALLOC=1"},
@@ -27,9 +30,18 @@ config_setting(
 )
 
 config_setting(
+    name = "include_threadtest",
+    values = {"define": "SLANG_INCLUDE_THREADTEST=1"},
+)
+
+config_setting(
     name = "build_shared",
     values = {"define": "BUILD_SHARED_LIBS=1"},
 )
+
+#################################################
+# Third-party Libraries
+#################################################
 
 # Third-party header-only libraries
 # These headers are directly referenced with angle brackets in source files.
@@ -46,34 +58,10 @@ cc_library(
     strip_include_prefix = "external",
 )
 
-#
-# Main Executable
-#
-cc_binary(
-    name = "slang_tool",
-    srcs = glob(
-        ["tools/**/*.cpp"],
-        allow_empty = True,
-    ),
-    copts = select({
-        ":fuzz_target": [
-            "-fsanitize=fuzzer",
-            "-DFUZZ_TARGET",
-        ],
-        "//conditions:default": [],
-    }),
-    linkopts = select({
-        ":fuzz_target": ["-fsanitize=fuzzer"],
-        "//conditions:default": [],
-    }),
-    deps = [
-        "//source:slang_core",
-    ],
-)
-
-#
+#################################################
 # Tests
-#
+#################################################
+
 cc_test(
     name = "slang_test",
     timeout = "short",  # 5 seconds
@@ -82,14 +70,15 @@ cc_test(
         allow_empty = True,
     ),
     deps = [
-        "//source:slang_core",
+        "//source:slang",
         "@catch2",
     ],
 )
 
-#
+#################################################
 # Python Bindings
-#
+#################################################
+
 py_library(
     name = "pyslang",
     srcs = glob(

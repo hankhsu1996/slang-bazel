@@ -1,0 +1,49 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+cc_test(
+    name = "tidy_unittests",
+    srcs = [
+        "TidyConfigParserTest.cpp",
+        "OnlyAssignedOnResetTest.cpp",
+        "RegisterHasNoResetTest.cpp",
+        "NoLatchesOnDesignTest.cpp",
+        "EnforcePortSuffixTest.cpp",
+        "NoOldAlwaysSyntaxTest.cpp",
+        "AlwaysCombNonBlockingTest.cpp",
+        "AlwaysFFBlockingTest.cpp",
+        "EnforceModuleInstantiationTest.cpp",
+        "OnlyANSIPortDecl.cpp",
+        "XilinxDoNotCareValuesTest.cpp",
+        "CastSignedIndexTest.cpp",
+        "NoDotStarInPortConnectionTest.cpp",
+        "NoImplicitPortNameInPortConnectionTest.cpp",
+        "AlwaysCombNamedTest.cpp",
+        "GenerateNamedTest.cpp",
+        "NoDotVarInPortConnectionTest.cpp",
+        "NoLegacyGenerateTest.cpp",
+        "AlwaysFFAssignmentOutsideConditionalTest.cpp",
+        "UnusedSensitiveSignalTest.cpp",
+    ],
+    deps = [
+        "//source:slang",  # Use the public target
+        "//tools/tidy:slang_tidy_lib",
+        "//tests/unittests:test_utils",
+        "//:slang_external",
+        "@catch2//:catch2_main",
+        "@fmt",
+    ],
+    includes = [
+        ".",
+        "../include",  # For tidy headers
+        "external",    # For Boost headers
+    ],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-DUNITTESTS",
+        "-DSLANG_BOOST_SINGLE_HEADER",
+    ],
+    linkstatic = 1,
+    timeout = "moderate",  # Corresponds to the 60 seconds in CMake
+)

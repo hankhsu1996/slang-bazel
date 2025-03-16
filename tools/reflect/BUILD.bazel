@@ -1,0 +1,32 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+cc_library(
+    name = "slang_reflect_lib",
+    srcs = [
+        "src/SvStruct.cpp",
+        "src/SvType.cpp",
+        "src/SvEnum.cpp",
+        "src/SvTypeReflector.cpp",
+        "src/SvLocalParam.cpp",
+        "src/SvUnion.cpp",
+    ],
+    hdrs = glob(["include/**/*.h"]),
+    deps = [
+        "//source:slang",
+        "//:slang_external",
+    ],
+    includes = [
+        "include",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "slang_reflect",
+    srcs = ["src/reflect.cpp"],
+    deps = [
+        ":slang_reflect_lib",
+        "//:slang_external",
+    ],
+    visibility = ["//visibility:public"],
+)

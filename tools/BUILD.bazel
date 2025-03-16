@@ -1,0 +1,22 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library") #@unused
+
+package(default_visibility = ["//visibility:public"])
+
+
+# This filegroup collects all tools for convenience
+# Usage: bazel build //tools:all_tools
+# To include threadtest: bazel build --config=threadtest //tools:all_tools
+filegroup(
+    name = "all_tools",
+    srcs = [
+        "//tools/driver:slang_driver",
+        "//tools/hier:slang_hier",
+        "//tools/netlist:slang_netlist",
+        "//tools/reflect:slang_reflect",
+        "//tools/rewriter:rewriter",
+        "//tools/tidy:slang_tidy",
+    ] + select({
+        "//:include_threadtest": ["//tools/threadtest:slang_threadtest"],
+        "//conditions:default": [],
+    }),
+)
