@@ -5,7 +5,7 @@ cc_binary(
     srcs = ["hier.cpp"],
     visibility = ["//visibility:public"],
     deps = [
-        "//source:slang",
+        "//:slang",
         "//third_party:external_headers",
     ],
 )

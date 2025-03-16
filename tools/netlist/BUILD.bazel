@@ -4,22 +4,22 @@ cc_binary(
     name = "slang_netlist",
     srcs = [
         "netlist.cpp",
-        "source/Netlist.cpp",
         "source/CombLoops.cpp",
+        "source/Netlist.cpp",
     ] + glob([
         "include/*.h",
         "include/*.hpp",
         "include/visitors/*.h",
         "include/visitors/*.hpp",
     ]),
-    deps = [
-        "//source:slang",
-        "//third_party:external_headers",
-    ],
     includes = [
         ".",
         "include",
         "include/visitors",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        "//:slang",
+        "//third_party:external_headers",
+    ],
 )

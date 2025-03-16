@@ -8,9 +8,9 @@ cc_binary(
         "@platforms//os:windows": ["//scripts:win32.manifest"],
         "//conditions:default": [],
     }),
+    visibility = ["//visibility:public"],
     deps = [
-        "//source:slang",
+        "//:slang",
         "//third_party:external_headers",
     ],
-    visibility = ["//visibility:public"],
 )
