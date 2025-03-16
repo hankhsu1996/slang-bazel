@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Header-only third-party libraries
+cc_library(
+    name = "external_headers",
+    hdrs = [
+        "BS_thread_pool.hpp",
+        "boost_concurrent.hpp",
+        "boost_unordered.hpp",
+        "expected.hpp",
+    ],
+    defines = [
+        "SLANG_BOOST_SINGLE_HEADER",  # Required for proper compilation with bundled Boost headers
+    ],
+    includes = ["."],
+)

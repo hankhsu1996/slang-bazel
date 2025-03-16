@@ -2,40 +2,28 @@ load("@rules_cc//cc:defs.bzl", "cc_test")
 
 cc_test(
     name = "tidy_unittests",
+    timeout = "moderate",
     srcs = [
-        "TidyConfigParserTest.cpp",
+        "AlwaysCombNamedTest.cpp",
+        "AlwaysCombNonBlockingTest.cpp",
+        "AlwaysFFAssignmentOutsideConditionalTest.cpp",
+        "AlwaysFFBlockingTest.cpp",
+        "CastSignedIndexTest.cpp",
+        "EnforceModuleInstantiationTest.cpp",
+        "EnforcePortSuffixTest.cpp",
+        "GenerateNamedTest.cpp",
+        "NoDotStarInPortConnectionTest.cpp",
+        "NoDotVarInPortConnectionTest.cpp",
+        "NoImplicitPortNameInPortConnectionTest.cpp",
+        "NoLatchesOnDesignTest.cpp",
+        "NoLegacyGenerateTest.cpp",
+        "NoOldAlwaysSyntaxTest.cpp",
+        "OnlyANSIPortDecl.cpp",
         "OnlyAssignedOnResetTest.cpp",
         "RegisterHasNoResetTest.cpp",
-        "NoLatchesOnDesignTest.cpp",
-        "EnforcePortSuffixTest.cpp",
-        "NoOldAlwaysSyntaxTest.cpp",
-        "AlwaysCombNonBlockingTest.cpp",
-        "AlwaysFFBlockingTest.cpp",
-        "EnforceModuleInstantiationTest.cpp",
-        "OnlyANSIPortDecl.cpp",
-        "XilinxDoNotCareValuesTest.cpp",
-        "CastSignedIndexTest.cpp",
-        "NoDotStarInPortConnectionTest.cpp",
-        "NoImplicitPortNameInPortConnectionTest.cpp",
-        "AlwaysCombNamedTest.cpp",
-        "GenerateNamedTest.cpp",
-        "NoDotVarInPortConnectionTest.cpp",
-        "NoLegacyGenerateTest.cpp",
-        "AlwaysFFAssignmentOutsideConditionalTest.cpp",
+        "TidyConfigParserTest.cpp",
         "UnusedSensitiveSignalTest.cpp",
-    ],
-    deps = [
-        "//source:slang",  # Use the public target
-        "//tools/tidy:slang_tidy_lib",
-        "//tests/unittests:test_utils",
-        "//:slang_external",
-        "@catch2//:catch2_main",
-        "@fmt",
-    ],
-    includes = [
-        ".",
-        "../include",  # For tidy headers
-        "external",    # For Boost headers
+        "XilinxDoNotCareValuesTest.cpp",
     ],
     copts = [
         "-std=c++20",
@@ -45,5 +33,12 @@ cc_test(
         "-DSLANG_BOOST_SINGLE_HEADER",
     ],
     linkstatic = 1,
-    timeout = "moderate",  # Corresponds to the 60 seconds in CMake
+    deps = [
+        "//:slang_external",
+        "//source:slang",
+        "//tests/unittests:test_utils",
+        "//tools/tidy:slang_tidy_lib",
+        "@catch2//:catch2_main",
+        "@fmt",
+    ],
 )

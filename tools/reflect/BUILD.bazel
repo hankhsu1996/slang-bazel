@@ -13,7 +13,7 @@ cc_library(
     hdrs = glob(["include/**/*.h"]),
     deps = [
         "//source:slang",
-        "//:slang_external",
+        "//third_party:external_headers",
     ],
     includes = [
         "include",
@@ -26,7 +26,7 @@ cc_binary(
     srcs = ["src/reflect.cpp"],
     deps = [
         ":slang_reflect_lib",
-        "//:slang_external",
+        "//third_party:external_headers",
     ],
     visibility = ["//visibility:public"],
 )
