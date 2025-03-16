@@ -109,8 +109,6 @@ cc_library(
         "-std=c++20",
         "-Wall",
         "-Wextra",
-        "-fvisibility=hidden",
-        "-fvisibility-inlines-hidden",
     ] + select({
         "//:use_mimalloc": ["-DSLANG_USE_MIMALLOC"],
         "//conditions:default": [],
