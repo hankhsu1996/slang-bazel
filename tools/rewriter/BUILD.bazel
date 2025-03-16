@@ -1,0 +1,16 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "rewriter",
+    srcs = [
+        "rewriter.cpp",
+    ] + select({
+        "@platforms//os:windows": ["//scripts:win32.manifest"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//source:slang",
+        "//:slang_external",  # For boost headers
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "slang_hier",
+    srcs = ["hier.cpp"],
+    deps = [
+        "//source:slang",
+        "//:slang_external",
+    ],
+    includes = [
+        ".",
+        "external",  # For finding <boost_unordered.hpp>
+    ],
+    visibility = ["//visibility:public"],
+)

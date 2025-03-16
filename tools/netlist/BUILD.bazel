@@ -1,0 +1,25 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+    name = "slang_netlist",
+    srcs = [
+        "netlist.cpp",
+        "source/Netlist.cpp",
+        "source/CombLoops.cpp",
+    ] + glob([
+        "include/*.h",
+        "include/*.hpp",
+        "include/visitors/*.h",
+        "include/visitors/*.hpp",
+    ]),
+    deps = [
+        "//source:slang",
+        "//:slang_external",
+    ],
+    includes = [
+        ".",
+        "include",
+        "include/visitors",
+    ],
+    visibility = ["//visibility:public"],
+)
