@@ -73,7 +73,7 @@ version_info(
 
 # Main library target
 cc_library(
-    name = "slang_slang",
+    name = "slang_core",
     srcs = [
         ":generate_diagnostics",
         ":generate_syntax",
@@ -166,7 +166,7 @@ cc_library(
 
 # Alias
 cc_library(
-    name = "slang_core",
+    name = "slang",
     visibility = ["//visibility:public"],
-    deps = [":slang_slang"],
+    deps = [":slang_core"],
 )
