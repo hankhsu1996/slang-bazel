@@ -10,7 +10,7 @@ cc_binary(
     }),
     deps = [
         "//source:slang",
-        "//:slang_external",  # For boost headers
+        "//third_party:external_headers",
     ],
     visibility = ["//visibility:public"],
 )

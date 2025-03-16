@@ -14,7 +14,7 @@ cc_binary(
     ]),
     deps = [
         "//source:slang",
-        "//:slang_external",
+        "//third_party:external_headers",
     ],
     includes = [
         ".",
