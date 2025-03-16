@@ -30,7 +30,7 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "//source:slang",
+        "//:slang",
         "//third_party:external_headers",
     ],
     alwayslink = 1,

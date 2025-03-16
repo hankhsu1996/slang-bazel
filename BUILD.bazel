@@ -40,6 +40,16 @@ config_setting(
 )
 
 #################################################
+# Main Library Alias
+#################################################
+
+alias(
+    name = "slang",
+    actual = "//source:slang_core",
+    visibility = ["//visibility:public"],
+)
+
+#################################################
 # Tests
 #################################################
 
@@ -51,7 +61,7 @@ cc_test(
         allow_empty = True,
     ),
     deps = [
-        "//source:slang",
+        "//source:slang_core",
         "@catch2",
     ],
 )

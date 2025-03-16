@@ -11,9 +11,9 @@ cc_library(
     hdrs = [
         "Test.h",
     ],
-    deps = [
-        "//source:slang",
-        "@catch2//:catch2",
-    ],
     includes = ["."],
+    deps = [
+        "//:slang",
+        "@catch2",
+    ],
 )

@@ -18,7 +18,7 @@ cc_binary(
     }),
     visibility = ["//visibility:public"],
     deps = [
-        "//source:slang",
+        "//:slang",
         "//third_party:external_headers",
     ],
 )

@@ -150,6 +150,7 @@ cc_library(
         "text",
         "util",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "//include:slang_headers",
         "//third_party:external_headers",
@@ -161,11 +162,4 @@ cc_library(
         "//:use_cpptrace": ["@com_github_jeremy-rifkin_cpptrace//:cpptrace"],
         "//conditions:default": [],
     }),
-)
-
-# Alias
-cc_library(
-    name = "slang",
-    visibility = ["//visibility:public"],
-    deps = [":slang_core"],
 )
