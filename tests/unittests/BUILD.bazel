@@ -1,4 +1,4 @@
-load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -7,12 +7,75 @@ cc_library(
     name = "test_utils",
     srcs = [
         "Test.cpp",
+        "main.cpp",
     ],
     hdrs = [
         "Test.h",
     ],
     includes = ["."],
     deps = [
+        "//:slang",
+        "@catch2",
+    ],
+)
+
+# Main unit test executable
+cc_test(
+    name = "unittests",
+    srcs = [
+        "DriverTests.cpp",
+        "FileTests.cpp",
+        "analysis/AnalysisTests.cpp",
+        "analysis/AnalysisTests.h",
+        "analysis/AssertionAnalysisTests.cpp",
+        "analysis/UnusedTests.cpp",
+        "ast/AssertionTests.cpp",
+        "ast/ClassTests.cpp",
+        "ast/ConfigTests.cpp",
+        "ast/CoverTests.cpp",
+        "ast/EvalTests.cpp",
+        "ast/ExpressionTests.cpp",
+        "ast/HierarchyTests.cpp",
+        "ast/InterfaceTests.cpp",
+        "ast/LookupTests.cpp",
+        "ast/MemberTests.cpp",
+        "ast/ParameterTests.cpp",
+        "ast/PortTests.cpp",
+        "ast/PrimitiveTests.cpp",
+        "ast/SerializerTests.cpp",
+        "ast/StatementTests.cpp",
+        "ast/SubroutineTests.cpp",
+        "ast/SystemFuncTests.cpp",
+        "ast/TypeTests.cpp",
+        "ast/WarningTests.cpp",
+        "parsing/DiagnosticTests.cpp",
+        "parsing/ExpressionParsingTests.cpp",
+        "parsing/LexerTests.cpp",
+        "parsing/MemberParsingTests.cpp",
+        "parsing/PreprocessorTests.cpp",
+        "parsing/StatementParsingTests.cpp",
+        "parsing/VisitorTests.cpp",
+        "util/CommandLineTests.cpp",
+        "util/IntervalMapTests.cpp",
+        "util/NumericTests.cpp",
+        "util/SmallVectorTests.cpp",
+        "util/UtilTests.cpp",
+    ],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-DUNITTESTS",
+    ],
+    includes = [
+        ".",
+        "analysis",
+        "ast",
+        "parsing",
+        "util",
+    ],
+    deps = [
+        ":test_utils",
         "//:slang",
         "@catch2",
     ],

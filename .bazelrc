@@ -30,6 +30,9 @@ build:pylib --define=SLANG_INCLUDE_PYLIB=1
 build:fuzzing --define=SLANG_FUZZ_TARGET=1
 build:threadtest --define=SLANG_INCLUDE_THREADTEST=1
 build:shared --define=BUILD_SHARED_LIBS=1
+build:shared --cxxopt="-fvisibility=hidden"
+build:shared --cxxopt="-fvisibility-inlines-hidden"
+build:static --define=SLANG_STATIC_DEFINE=1
 
 # Combined configurations
 build:full --config=mimalloc --config=cpptrace --config=shared

@@ -1,12 +1,12 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
-cc_binary(
-    name = "slang_netlist",
+cc_library(
+    name = "netlist_lib",
     srcs = [
-        "netlist.cpp",
         "source/CombLoops.cpp",
         "source/Netlist.cpp",
-    ] + glob([
+    ],
+    hdrs = glob([
         "include/*.h",
         "include/*.hpp",
         "include/visitors/*.h",
@@ -17,9 +17,18 @@ cc_binary(
         "include",
         "include/visitors",
     ],
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//tools/netlist/tests:__pkg__",  # Make visible to tests
+    ],
     deps = [
         "//:slang",
         "//third_party:external_headers",
     ],
+)
+
+cc_binary(
+    name = "slang_netlist",
+    srcs = ["netlist.cpp"],
+    visibility = ["//visibility:public"],
+    deps = [":netlist_lib"],
 )
