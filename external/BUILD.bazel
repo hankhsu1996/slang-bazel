@@ -10,6 +10,10 @@ cc_library(
         "boost_concurrent.hpp",
         "boost_unordered.hpp",
         "expected.hpp",
+        "ieee1800/sv_vpi_user.h",
+        "ieee1800/svdpi.h",
+        "ieee1800/vpi_compatibility.h",
+        "ieee1800/vpi_user.h",
     ],
     defines = [
         "SLANG_BOOST_SINGLE_HEADER",  # Required for proper compilation with bundled Boost headers
