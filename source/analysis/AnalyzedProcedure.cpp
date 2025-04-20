@@ -53,7 +53,7 @@ AnalyzedProcedure::AnalyzedProcedure(AnalysisContext& context, const Symbol& ana
                                      const AnalyzedProcedure* parentProcedure) :
     analyzedSymbol(&analyzedSymbol), parentProcedure(parentProcedure) {
 
-    DataFlowAnalysis dfa(context, analyzedSymbol);
+    DataFlowAnalysis dfa(context, analyzedSymbol, true);
     switch (analyzedSymbol.kind) {
         case SymbolKind::ProceduralBlock:
             dfa.run(analyzedSymbol.as<ProceduralBlockSymbol>().getBody());
@@ -123,6 +123,13 @@ AnalyzedProcedure::AnalyzedProcedure(AnalysisContext& context, const Symbol& ana
                         << subroutine.name;
                 }
             }
+        }
+
+        // Concurrent assertions cannot appear in tasks and functions, but expect
+        // statements can appear in tasks and need to be analyzed just like an assert.
+        for (auto stmt : dfa.getAssertionStatements()) {
+            if (stmt->kind != StatementKind::ProceduralChecker)
+                assertions.emplace_back(context, nullptr, *this, *stmt, nullptr);
         }
     }
 }

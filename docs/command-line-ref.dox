@@ -79,8 +79,9 @@ use the number of threads supported by the system -- this can be set to some oth
 value to more specifically control the concurrency. Setting it to 1 will disable
 the use of threading.
 
-Note that multithreading only currently applies to the parsing stage of compilation,
-and that it is not supported when running with `--single-unit`
+Note that multithreading *parsing* cannot be supported when running
+with `--single-unit`, though other parts of the compilation process
+may still take advantage of threading where possible.
 
 @section Actions
 
@@ -308,7 +309,7 @@ infinite recursion during constant evaluation. The default is 128.
 
 Set the maximum number of steps that can occur during constant evaluation
 before giving up. Used to detect infinite constant evaluation loops.
-The default is 100000.
+The default is 1000000.
 
 `--constexpr-backtrace-limit <limit>`
 
@@ -457,6 +458,15 @@ in all such case item statements.
 By default X and Z bit coverage is not required; having items that cover all possible
 0 and 1 bit combinations is sufficient to assume full coverage of the case input.
 
+`--max-case-analysis-steps <steps>`
+
+The maximum number of steps to take while trying to analyze a wildcard case statement.
+The default is 65535.
+
+Determining whether a list of wildcard case clauses fully cover the entire input space
+is, in general, NP-complete, so there is a limit to prevent exponential explosion in
+analysis time. In practice case statements written by humans will rarely, if ever,
+exhibit this kind of behavior.
 
 @section diag-control Diagnostic Control
 

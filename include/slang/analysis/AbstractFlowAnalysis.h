@@ -25,8 +25,8 @@ public:
     /// The symbol being analyzed (procedure, function, etc).
     const Symbol& rootSymbol;
 
-    /// Flags controlling the behavior of the analysis.
-    bitmask<AnalysisFlags> flags;
+    /// Various options controlling the behavior of the analysis.
+    AnalysisOptions options;
 
     /// Set to true if the analysis detected an error.
     bool bad = false;
@@ -36,8 +36,9 @@ public:
 
 protected:
     /// Constructs a new flow analysis pass.
-    FlowAnalysisBase(const Symbol& symbol, bitmask<AnalysisFlags> flags) :
-        rootSymbol(symbol), flags(flags),
+    FlowAnalysisBase(const Symbol& symbol, AnalysisOptions options,
+                     Diagnostics* diagnostics = nullptr) :
+        rootSymbol(symbol), options(options), diagnostics(diagnostics),
         evalContext(ASTContext(*symbol.getParentScope(), LookupLocation::after(symbol))) {}
 
     ConstantValue tryEvalBool(const Expression& expr) const;
@@ -47,6 +48,11 @@ protected:
 
     bool isFullyCovered(const CaseStatement& stmt) const;
 
+    /// An optional diagnostics collection. If provided, warnings encountered during
+    /// analysis will be added to it.
+    Diagnostics* diagnostics;
+
+    /// An EvalContext that can be used for constant evaluation during analysis.
     mutable EvalContext evalContext;
 };
 
@@ -58,6 +64,8 @@ protected:
 ///
 /// See background on lattice flow analysis:
 /// https://en.wikipedia.org/wiki/Data-flow_analysis
+/// https://clang.llvm.org/docs/DataFlowAnalysisIntro.html
+///
 template<typename TDerived, typename TState>
 class AbstractFlowAnalysis : public FlowAnalysisBase {
 #define DERIVED *static_cast<TDerived*>(this)
@@ -279,11 +287,20 @@ protected:
     void visitStmt(const CaseStatement& stmt) {
         visit(stmt.expr);
 
+        // If the branch is known we can visit it explicitly,
+        // otherwise we need to merge states for all case items.
+        // TODO: report warnings from the eval here?
+        auto [knownBranch, isKnown] = stmt.getKnownBranch(evalContext);
+
         auto initialState = std::move(state);
         auto finalState = (DERIVED).unreachableState();
 
         for (auto& item : stmt.items) {
-            setState((DERIVED).copyState(initialState));
+            if (isKnown && knownBranch != item.stmt)
+                setUnreachable();
+            else
+                setState((DERIVED).copyState(initialState));
+
             for (auto itemExpr : item.expressions)
                 visit(*itemExpr);
 
@@ -291,12 +308,26 @@ protected:
             (DERIVED).joinState(finalState, state);
         }
 
+        // Determine whether the case statement has full coverage of all possible
+        // inputs, such that we're guaranteed to select one of the case items.
+        const bool covered = isFullyCovered(stmt);
+
         if (stmt.defaultCase) {
-            setState((DERIVED).copyState(initialState));
+            // If the case input is fully covered by item expressions,
+            // or if we have a statically known branch that is not the
+            // default, then we know the default case is never hit.
+            if (covered || (isKnown && knownBranch != stmt.defaultCase))
+                setUnreachable();
+            else
+                setState((DERIVED).copyState(initialState));
+
             visit(*stmt.defaultCase);
             (DERIVED).joinState(finalState, state);
         }
-        else if (!isFullyCovered(stmt)) {
+        else if (!isKnown && !covered) {
+            // Branch is not statically known and the case input is
+            // not fully covered, so we have to assume that no item
+            // may be selected and that the initial state is relevant.
             (DERIVED).joinState(finalState, initialState);
         }
 
@@ -304,6 +335,7 @@ protected:
     }
 
     void visitStmt(const PatternCaseStatement& stmt) {
+        // TODO: match handling for regular CaseStatements
         visit(stmt.expr);
 
         auto initialState = std::move(state);
@@ -587,8 +619,6 @@ protected:
                             setState(std::move(caseFinal));
                             break;
                         }
-                        default:
-                            SLANG_UNREACHABLE;
                     }
                 }
 

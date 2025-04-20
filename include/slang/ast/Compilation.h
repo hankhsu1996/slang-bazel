@@ -158,7 +158,7 @@ struct SLANG_EXPORT CompilationOptions {
 
     /// The maximum number of steps to allow when evaluating a constant expressions,
     /// to detect infinite loops.
-    uint32_t maxConstexprSteps = 100000;
+    uint32_t maxConstexprSteps = 1000000;
 
     /// The maximum number of frames in a callstack to display in diagnostics
     /// before abbreviating them.
@@ -310,8 +310,10 @@ public:
     /// so will result in an exception.
     const RootSymbol& getRoot();
 
-    /// Gets the root of the design if it's been finalized, or nullptr if it hasn't.
-    const RootSymbol* tryGetRoot() const { return root.get(); }
+    /// Gets the root of the design without attempting to finalize it.
+    /// This means that (if the design has not been finalized previously) things like
+    /// defparams will not be resolved, root instances will not have been created, etc.
+    const RootSymbol& getRootNoFinalize() const { return *root; }
 
     /// Indicates whether the design has been compiled and can no longer accept modifications.
     bool isFinalized() const { return finalized; }
@@ -904,6 +906,7 @@ private:
         const NetType* defaultNetType = nullptr;
         std::optional<TimeScale> timeScale;
         UnconnectedDrive unconnectedDrive = UnconnectedDrive::None;
+        bool cellDefine = false;
     };
 
     // Map from syntax nodes to parse-time metadata about them.
