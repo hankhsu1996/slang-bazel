@@ -43,15 +43,18 @@ genrule(
         "//scripts:syntax",
         "//scripts:trivia",
         "//scripts:tokenkinds",
+        "//scripts:systemnames",
     ],
     outs = [
         "slang/syntax/AllSyntax.h",
         "AllSyntax.cpp",
         "SyntaxClone.cpp",
+        "TokenKind.cpp",
+        "KnownSystemName.cpp",
         "slang/syntax/SyntaxKind.h",
         "slang/syntax/SyntaxFwd.h",
         "slang/parsing/TokenKind.h",
-        "TokenKind.cpp",
+        "slang/parsing/KnownSystemName.h",
     ],
     cmd = """
         python3 $(location //scripts:syntax_gen) \

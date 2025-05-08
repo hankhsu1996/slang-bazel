@@ -31,3 +31,8 @@ filegroup(
     name = "tokenkinds",
     srcs = ["tokenkinds.txt"],
 )
+
+filegroup(
+    name = "systemnames",
+    srcs = ["systemnames.txt"],
+)

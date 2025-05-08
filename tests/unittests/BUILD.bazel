@@ -25,7 +25,6 @@ cc_test(
     srcs = [
         "DriverTests.cpp",
         "FileTests.cpp",
-        "analysis/AnalysisTests.cpp",
         "analysis/AnalysisTests.h",
         "analysis/AssertionAnalysisTests.cpp",
         "analysis/UnusedTests.cpp",
